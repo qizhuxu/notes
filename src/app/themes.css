@@ -1,0 +1,244 @@
+/* NoteVault Theme Engine — CSS Custom Properties */
+
+/* ============================================================
+   Theme dimensions
+   ============================================================ */
+:root,
+[data-theme='minimal'] {
+  --sidebar-width: 260px;
+  --list-width: 340px;
+}
+
+[data-theme='cozy'] {
+  --sidebar-width: 280px;
+  --list-width: 380px;
+}
+
+[data-theme='dense'] {
+  --sidebar-width: 220px;
+  --list-width: 300px;
+}
+
+/* ============================================================
+   Minimal — Light
+   ============================================================ */
+[data-theme='minimal'][data-mode='light'],
+[data-theme='minimal']:not([data-mode]) {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-tertiary: #f1f3f5;
+  --color-bg-hover: rgba(0, 0, 0, 0.04);
+  --color-bg-active: rgba(0, 0, 0, 0.08);
+  --color-bg-card: #ffffff;
+  --color-bg-overlay: rgba(0, 0, 0, 0.5);
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-inverse: #ffffff;
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-accent: #6366f1;
+  --color-accent-foreground: #ffffff;
+  --color-accent-light: rgba(99, 102, 241, 0.1);
+  --color-star: #f59e0b;
+  --color-danger: #ef4444;
+  --color-danger-light: rgba(239, 68, 68, 0.1);
+  --color-success: #10b981;
+  --color-success-light: rgba(16, 185, 129, 0.1);
+  --color-scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --color-scrollbar-track: transparent;
+  --color-shadow: rgba(0, 0, 0, 0.08);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* ============================================================
+   Minimal — Dark
+   ============================================================ */
+[data-theme='minimal'][data-mode='dark'] {
+  --color-bg-primary: #0f0f1a;
+  --color-bg-secondary: #1a1a2e;
+  --color-bg-tertiary: #242440;
+  --color-bg-hover: rgba(255, 255, 255, 0.06);
+  --color-bg-active: rgba(255, 255, 255, 0.1);
+  --color-bg-card: #1a1a2e;
+  --color-bg-overlay: rgba(0, 0, 0, 0.6);
+  --color-text-primary: #e5e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-text-tertiary: #6b7280;
+  --color-text-inverse: #0f0f1a;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-light: rgba(255, 255, 255, 0.05);
+  --color-accent: #818cf8;
+  --color-accent-foreground: #ffffff;
+  --color-accent-light: rgba(129, 140, 248, 0.15);
+  --color-star: #fbbf24;
+  --color-danger: #f87171;
+  --color-danger-light: rgba(248, 113, 113, 0.15);
+  --color-success: #34d399;
+  --color-success-light: rgba(52, 211, 153, 0.15);
+  --color-scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --color-scrollbar-track: transparent;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================
+   Cozy — Light
+   ============================================================ */
+[data-theme='cozy'][data-mode='light'] {
+  --color-bg-primary: #fdf6f0;
+  --color-bg-secondary: #f7ede4;
+  --color-bg-tertiary: #f0e0d3;
+  --color-bg-hover: rgba(180, 120, 60, 0.08);
+  --color-bg-active: rgba(180, 120, 60, 0.14);
+  --color-bg-card: #fffbf8;
+  --color-bg-overlay: rgba(0, 0, 0, 0.45);
+  --color-text-primary: #3d2c1e;
+  --color-text-secondary: #8b7355;
+  --color-text-tertiary: #b8a48e;
+  --color-text-inverse: #ffffff;
+  --color-border: #e8d5c4;
+  --color-border-light: #f0e4d8;
+  --color-accent: #c47a5a;
+  --color-accent-foreground: #ffffff;
+  --color-accent-light: rgba(196, 122, 90, 0.12);
+  --color-star: #e8a849;
+  --color-danger: #d45454;
+  --color-danger-light: rgba(212, 84, 84, 0.1);
+  --color-success: #5aad7a;
+  --color-success-light: rgba(90, 173, 122, 0.1);
+  --color-scrollbar-thumb: rgba(180, 120, 60, 0.2);
+  --color-scrollbar-track: transparent;
+  --color-shadow: rgba(100, 60, 20, 0.08);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* ============================================================
+   Cozy — Dark
+   ============================================================ */
+[data-theme='cozy'][data-mode='dark'] {
+  --color-bg-primary: #1c1410;
+  --color-bg-secondary: #2a2018;
+  --color-bg-tertiary: #382c22;
+  --color-bg-hover: rgba(255, 200, 150, 0.07);
+  --color-bg-active: rgba(255, 200, 150, 0.13);
+  --color-bg-card: #251c14;
+  --color-bg-overlay: rgba(0, 0, 0, 0.55);
+  --color-text-primary: #f0e0d0;
+  --color-text-secondary: #a89078;
+  --color-text-tertiary: #705c4a;
+  --color-text-inverse: #1c1410;
+  --color-border: rgba(255, 200, 150, 0.12);
+  --color-border-light: rgba(255, 200, 150, 0.06);
+  --color-accent: #d4915e;
+  --color-accent-foreground: #ffffff;
+  --color-accent-light: rgba(212, 145, 94, 0.18);
+  --color-star: #f0c060;
+  --color-danger: #e87070;
+  --color-danger-light: rgba(232, 112, 112, 0.15);
+  --color-success: #5cc888;
+  --color-success-light: rgba(92, 200, 136, 0.15);
+  --color-scrollbar-thumb: rgba(255, 200, 150, 0.18);
+  --color-scrollbar-track: transparent;
+  --color-shadow: rgba(0, 0, 0, 0.35);
+}
+
+/* ============================================================
+   Dense — Light
+   ============================================================ */
+[data-theme='dense'][data-mode='light'] {
+  --color-bg-primary: #f5f5f5;
+  --color-bg-secondary: #ebedef;
+  --color-bg-tertiary: #e2e4e7;
+  --color-bg-hover: rgba(0, 0, 0, 0.05);
+  --color-bg-active: rgba(0, 0, 0, 0.09);
+  --color-bg-card: #ffffff;
+  --color-bg-overlay: rgba(0, 0, 0, 0.5);
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-inverse: #ffffff;
+  --color-border: #d1d5db;
+  --color-border-light: #e5e7eb;
+  --color-accent: #4f46e5;
+  --color-accent-foreground: #ffffff;
+  --color-accent-light: rgba(79, 70, 229, 0.1);
+  --color-star: #f59e0b;
+  --color-danger: #dc2626;
+  --color-danger-light: rgba(220, 38, 38, 0.08);
+  --color-success: #059669;
+  --color-success-light: rgba(5, 150, 105, 0.08);
+  --color-scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --color-scrollbar-track: transparent;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* ============================================================
+   Dense — Dark
+   ============================================================ */
+[data-theme='dense'][data-mode='dark'] {
+  --color-bg-primary: #111111;
+  --color-bg-secondary: #1a1a1a;
+  --color-bg-tertiary: #242424;
+  --color-bg-hover: rgba(255, 255, 255, 0.06);
+  --color-bg-active: rgba(255, 255, 255, 0.1);
+  --color-bg-card: #1a1a1a;
+  --color-bg-overlay: rgba(0, 0, 0, 0.6);
+  --color-text-primary: #f3f4f6;
+  --color-text-secondary: #9ca3af;
+  --color-text-tertiary: #6b7280;
+  --color-text-inverse: #111111;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-border-light: rgba(255, 255, 255, 0.06);
+  --color-accent: #818cf8;
+  --color-accent-foreground: #ffffff;
+  --color-accent-light: rgba(129, 140, 248, 0.15);
+  --color-star: #fbbf24;
+  --color-danger: #f87171;
+  --color-danger-light: rgba(248, 113, 113, 0.15);
+  --color-success: #34d399;
+  --color-success-light: rgba(52, 211, 153, 0.15);
+  --color-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --color-scrollbar-track: transparent;
+  --color-shadow: rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   Custom scrollbar
+   ============================================================ */
+.nv-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nv-scrollbar::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+.nv-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.nv-scrollbar::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+/* ============================================================
+   Transitions
+   ============================================================ */
+.nv-transition {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* ============================================================
+   Mobile panel management
+   ============================================================ */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 100vw;
+    --list-width: 100vw;
+  }
+}
