@@ -1,0 +1,92 @@
+[
+  {
+    "url": "https://agentskills.me/skill/using-superpowers",
+    "name": "using-superpowers - Agent Skills",
+    "snippet": "Use the skills CLI to install this skill with one command . Auto-detects all installed AI assistants. Method 1 - skills CLI. npx skills i obra/superpowers/skills ...",
+    "host_name": "agentskills.me",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/obra/superpowers",
+    "name": "obra/superpowers: An agentic skills framework",
+    "snippet": "2 days ago — The Superpowers marketplace provides Superpowers and some other related plugins for Claude Code. In Claude Code, register the marketplace first:.\nSuperpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.",
+    "host_name": "github.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.termdock.com/en/blog/superpowers-framework-agent-skills",
+    "name": "Superpowers: Skills Framework Reshaping AI Dev",
+    "snippet": "17 Mar 2026 — A deep dive into obra/ superpowers : the agentic skills framework with 89K+ GitHub stars that enforces TDD, structured planning, ...",
+    "host_name": "www.termdock.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://medium.com/@spacholski99/gave-claude-code-superpowers-how-i-transformed-ai-into-a-seasoned-senior-engineer-280a64a25d3d",
+    "name": "Gave Claude Code Superpowers: How I Transformed AI",
+    "snippet": "Superpowers changes that . It's a set of instructions and skills that force the agent to behave like a seasoned senior engineer, not a reckless ...",
+    "host_name": "medium.com",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/ClaudeAI/comments/1q85tlf/i_feel_like_ive_just_had_a_breakthrough_with_how",
+    "name": "I feel like I've just had a breakthrough with how I handle",
+    "snippet": "My first exposure to TDD was the subagent driven implementation superpowers skill . If you have superpowers installed and you have a plan ...",
+    "host_name": "www.reddit.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://jimmysong.io/ai/superpowers",
+    "name": "A composable skills library for coding agents",
+    "snippet": "Superpowers is an open-source skills library and development workflow for coding agents . Before a coding agent writes code, Superpowers guides design refinement ...",
+    "host_name": "jimmysong.io",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://news.ycombinator.com/item?id=45547344",
+    "name": "Superpowers: How I'm using coding agents in October 2025",
+    "snippet": "10 Oct 2025 — Some of these skills are probably better as programmed workflows that the LLM is forced to go through to improve reliability/consistency, that's ...",
+    "host_name": "news.ycombinator.com",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://aiskill.market/browse",
+    "name": "Find Your Next AI Superpower - AI Skill Market",
+    "snippet": "Find Your Next AI Superpower. Browse 1212 production-ready skills from verified publishers. Install in 60 seconds. 58 Verified Publishers. Updated Daily.",
+    "host_name": "aiskill.market",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://claude.com/plugins/superpowers",
+    "name": "Superpowers – Claude Plugin | Anthropic",
+    "snippet": "It provides composable skills for test-driven development (TDD), systematic debugging, brainstorming, subagent-driven development with built-in code review, and the ability to author new skills.",
+    "host_name": "claude.com",
+    "rank": 8,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://deepwiki.com/obra/superpowers",
+    "name": "obra/superpowers | DeepWiki",
+    "snippet": "Superpowers is a multi-platform plugin and skills library that provides structured development workflows and AI skills across Claude Code, Codex, OpenCode, Cursor, Gemini CLI, and GitHub Copilot CLI.",
+    "host_name": "deepwiki.com",
+    "rank": 9,
+    "date": "",
+    "favicon": ""
+  }
+]
