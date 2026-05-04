@@ -9,6 +9,8 @@ import { NextRequest } from 'next/server';
 import { success, error, paginated, parseBody, getPagination } from '@/lib/api-response';
 import { mockNotes, genId, type MockNote } from '@/lib/mock-data';
 
+export const runtime = 'edge';
+
 /** GET /api/notes */
 export async function GET(req: NextRequest) {
   try {

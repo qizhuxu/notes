@@ -19,6 +19,8 @@ function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+export const runtime = 'edge';
+
 export async function POST(req: NextRequest) {
   try {
     const body = await parseBody<{ email?: string; password?: string }>(req);

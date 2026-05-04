@@ -9,6 +9,8 @@
 
 import { success } from '@/lib/api-response';
 
+export const runtime = 'edge';
+
 export async function POST() {
   // In a real implementation, you would:
   // 1. Extract the token from Authorization header

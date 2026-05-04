@@ -9,6 +9,8 @@ import { NextRequest } from 'next/server';
 import { success, error, parseBody } from '@/lib/api-response';
 import { mockFolders, genId, type MockFolder } from '@/lib/mock-data';
 
+export const runtime = 'edge';
+
 /** GET /api/folders */
 export async function GET() {
   try {

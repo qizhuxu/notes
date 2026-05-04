@@ -9,6 +9,8 @@ import { NextRequest } from 'next/server';
 import { success, error, parseBody } from '@/lib/api-response';
 import { mockTags, genId, type MockTag } from '@/lib/mock-data';
 
+export const runtime = 'edge';
+
 /** GET /api/tags */
 export async function GET() {
   try {

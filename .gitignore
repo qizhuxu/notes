@@ -52,3 +52,13 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# cloudflare
+.wrangler/
+.dev.vars
+wrangler.toml
+
+# database
+*.db
+*.db-journal
+db/

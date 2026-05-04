@@ -11,6 +11,8 @@ import { mockNotes, mockNoteVersions, genId, type MockNoteVersion } from '@/lib/
 
 type RouteContext = { params: Promise<{ id: string }> };
 
+export const runtime = 'edge';
+
 /** GET /api/notes/:id/versions */
 export async function GET(_req: NextRequest, ctx: RouteContext) {
   try {

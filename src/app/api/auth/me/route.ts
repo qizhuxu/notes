@@ -11,6 +11,8 @@
 import { NextRequest } from 'next/server';
 import { success, error } from '@/lib/api-response';
 
+export const runtime = 'edge';
+
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get('authorization');

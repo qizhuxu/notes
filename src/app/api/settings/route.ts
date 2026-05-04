@@ -15,6 +15,8 @@ import {
   type MockSettings,
 } from '@/lib/mock-data';
 
+export const runtime = 'edge';
+
 /** GET /api/settings */
 export async function GET() {
   try {

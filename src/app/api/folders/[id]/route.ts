@@ -16,6 +16,8 @@ function findFolder(id: string) {
   return mockFolders.find((f) => f.id === id) ?? null;
 }
 
+export const runtime = 'edge';
+
 /** PUT /api/folders/:id — update folder name or icon */
 export async function PUT(req: NextRequest, ctx: RouteContext) {
   try {

@@ -17,6 +17,8 @@ function findNote(id: string) {
   return mockNotes.find((n) => n.id === id) ?? null;
 }
 
+export const runtime = 'edge';
+
 /** GET /api/notes/:id */
 export async function GET(_req: NextRequest, ctx: RouteContext) {
   try {

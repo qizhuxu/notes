@@ -14,6 +14,8 @@ import { mockApiKeys, genId, type MockApiKey } from '@/lib/mock-data';
 
 type DeleteContext = { params: Promise<{ id: string }> };
 
+export const runtime = 'edge';
+
 /** GET /api/settings/api-keys */
 export async function GET() {
   try {
