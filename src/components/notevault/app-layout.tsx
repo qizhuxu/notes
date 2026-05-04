@@ -3,6 +3,7 @@
 import { Sidebar } from './sidebar';
 import { NoteList } from './note-list';
 import { EditorPanel } from './editor-panel';
+import { RightPanel } from './right-panel';
 import { useNoteStore } from '@/stores/note-store';
 import { AISidebar } from '@/components/ai/ai-sidebar';
 import { useEffect } from 'react';
@@ -27,6 +28,7 @@ export function AppLayout() {
       <Sidebar />
       <NoteList />
       <EditorPanel />
+      <RightPanel />
       <AISidebar />
 
       {/* Mobile navigation */}

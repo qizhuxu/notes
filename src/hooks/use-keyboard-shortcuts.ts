@@ -20,6 +20,7 @@ export function useKeyboardShortcuts() {
   const toggleAISidebar = useAIStore((s) => s.toggleSidebar);
   const setSearchQuery = useNoteStore((s) => s.setSearchQuery);
   const createNote = useNoteStore((s) => s.createNote);
+  const togglePreview = useNoteStore((s) => s.togglePreview);
   const toggleMode = useThemeStore((s) => s.toggleMode);
 
   const focusSearch = useCallback(() => {
@@ -65,6 +66,12 @@ export function useKeyboardShortcuts() {
       ctrlKey: true,
       description: '打开设置',
       action: openSettings,
+    },
+    {
+      key: 'p',
+      ctrlKey: true,
+      description: '切换预览面板',
+      action: togglePreview,
     },
     {
       key: 't',
@@ -130,6 +137,11 @@ export const SHORTCUT_LIST = [
     name: '设置',
     keys: ['Ctrl', ','],
     description: '打开设置页面',
+  },
+  {
+    name: '预览面板',
+    keys: ['Ctrl', 'P'],
+    description: '显示/隐藏右侧预览面板',
   },
   {
     name: '切换主题',

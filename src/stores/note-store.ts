@@ -323,12 +323,14 @@ interface NoteState {
   selectedTags: string[];
   sidebarCollapsed: boolean;
   sidebarMobileOpen: boolean;
+  showPreview: boolean;
 
   // Computed
   filteredNotes: () => Note[];
   getLinkedNotes: (noteId: string) => { outbound: Note[]; inbound: Note[] };
 
   // Actions
+  togglePreview: () => void;
   setActiveFolder: (id: string | null) => void;
   setActiveNote: (id: string | null) => void;
   toggleStar: (id: string) => void;
@@ -355,6 +357,7 @@ export const useNoteStore = create<NoteState>((set, get) => ({
   selectedTags: [],
   sidebarCollapsed: false,
   sidebarMobileOpen: false,
+  showPreview: true,
 
   getLinkedNotes: (noteId) => {
     const { notes, links } = get();
@@ -456,6 +459,9 @@ export const useNoteStore = create<NoteState>((set, get) => ({
 
   toggleSidebar: () =>
     set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+
+  togglePreview: () =>
+    set((s) => ({ showPreview: !s.showPreview })),
 
   toggleTag: (tagId) =>
     set((s) => ({

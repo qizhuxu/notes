@@ -56,6 +56,8 @@ function NoteEditor({
   toggleStar: (id: string) => void;
 }) {
   const updateNoteContent = useNoteStore((s) => s.updateNoteContent);
+  const showPreview = useNoteStore((s) => s.showPreview);
+  const togglePreview = useNoteStore((s) => s.togglePreview);
   const [showMenu, setShowMenu] = useState(false);
   const [editTitle, setEditTitle] = useState(note.title);
   const [wordCount, setWordCount] = useState(note.wordCount);
@@ -142,6 +144,33 @@ function NoteEditor({
 
         {/* Actions */}
         <div className="flex items-center gap-1 flex-shrink-0">
+          {/* Toggle Preview */}
+          <button
+            onClick={togglePreview}
+            className="w-8 h-8 flex items-center justify-center rounded-lg nv-transition"
+            style={{
+              color: showPreview
+                ? 'var(--color-accent)'
+                : 'var(--color-text-tertiary)',
+              background: showPreview
+                ? 'var(--color-accent-light)'
+                : 'transparent',
+            }}
+            onMouseEnter={(e) => {
+              if (!showPreview)
+                e.currentTarget.style.background = 'var(--color-bg-hover)';
+            }}
+            onMouseLeave={(e) => {
+              if (!showPreview)
+                e.currentTarget.style.background = 'transparent';
+            }}
+            aria-label={showPreview ? '隐藏预览' : '显示预览'}
+            title={showPreview ? '隐藏预览 (Ctrl+P)' : '显示预览 (Ctrl+P)'}
+          >
+            <span className="text-sm">{showPreview ? '👁' : '👁‍🗨'}</span>
+          </button>
+
+          {/* Star */}
           <button
             onClick={() => toggleStar(note.id)}
             className="w-8 h-8 flex items-center justify-center rounded-lg nv-transition"
