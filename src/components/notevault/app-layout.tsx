@@ -4,9 +4,16 @@ import { Sidebar } from './sidebar';
 import { NoteList } from './note-list';
 import { EditorPanel } from './editor-panel';
 import { useNoteStore } from '@/stores/note-store';
+import { AISidebar } from '@/components/ai/ai-sidebar';
+import { useEffect } from 'react';
+import { useAIStore } from '@/stores/ai-store';
+import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 
 export function AppLayout() {
   const sidebarCollapsed = useNoteStore((s) => s.sidebarCollapsed);
+
+  // Register global keyboard shortcuts
+  useKeyboardShortcuts();
 
   return (
     <div
@@ -20,6 +27,7 @@ export function AppLayout() {
       <Sidebar />
       <NoteList />
       <EditorPanel />
+      <AISidebar />
 
       {/* Mobile navigation */}
       <MobileNav />

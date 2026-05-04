@@ -1,7 +1,9 @@
 'use client';
 
 import { useNoteStore } from '@/stores/note-store';
+import { useAuthStore } from '@/stores/auth-store';
 import { ThemeSwitcher } from '@/components/theme-switcher';
+import { useRouter } from 'next/navigation';
 
 export function Sidebar() {
   const {
@@ -14,6 +16,7 @@ export function Sidebar() {
     sidebarMobileOpen,
     setActiveFolder,
     setSearchQuery,
+    setDebouncedSearchQuery,
     toggleSidebar,
     toggleTag,
     setSidebarMobileOpen,
@@ -79,7 +82,7 @@ export function Sidebar() {
                 type="text"
                 placeholder="搜索笔记..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => setDebouncedSearchQuery(e.target.value)}
                 className="w-full px-3 py-2 text-sm rounded-lg outline-none nv-transition"
                 style={{
                   background: 'var(--color-bg-tertiary)',
@@ -244,6 +247,16 @@ export function Sidebar() {
               </div>
             </div>
 
+            {/* Bottom actions: Knowledge Graph, Settings, Logout */}
+            <div
+              className="px-2 py-1"
+              style={{ borderTop: '1px solid var(--color-border)' }}
+            >
+              <KnowledgeGraphButton />
+              <SettingsButton />
+              <LogoutButton />
+            </div>
+
             {/* Footer */}
             <div
               className="p-3 flex items-center justify-between"
@@ -275,5 +288,104 @@ export function Sidebar() {
         )}
       </aside>
     </>
+  );
+}
+
+/* ============================================================
+   Knowledge Graph Navigation Button
+   ============================================================ */
+
+function KnowledgeGraphButton() {
+  const router = useRouter();
+  const links = useNoteStore((s) => s.links);
+  const notes = useNoteStore((s) => s.notes);
+
+  const linkCount = links.length;
+  const nodeCount = notes.filter((n) => !n.isTrashed).length;
+
+  return (
+    <button
+      onClick={() => router.push('/graph')}
+      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm nv-transition text-left"
+      style={{ color: 'var(--color-text-secondary)' }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = 'var(--color-bg-hover)';
+        e.currentTarget.style.color = 'var(--color-text-primary)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.color = 'var(--color-text-secondary)';
+      }}
+    >
+      <span className="text-base flex-shrink-0">🗺️</span>
+      <span className="flex-1 truncate">知识图谱</span>
+      <span
+        className="text-xs tabular-nums"
+        style={{ color: 'var(--color-text-tertiary)' }}
+      >
+        {linkCount}
+      </span>
+    </button>
+  );
+}
+
+/* ============================================================
+   Settings Navigation Button
+   ============================================================ */
+
+function SettingsButton() {
+  const router = useRouter();
+
+  return (
+    <button
+      onClick={() => router.push('/settings')}
+      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm nv-transition text-left"
+      style={{ color: 'var(--color-text-secondary)' }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = 'var(--color-bg-hover)';
+        e.currentTarget.style.color = 'var(--color-text-primary)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.color = 'var(--color-text-secondary)';
+      }}
+    >
+      <span className="text-base flex-shrink-0">⚙️</span>
+      <span className="flex-1 truncate">设置</span>
+    </button>
+  );
+}
+
+/* ============================================================
+   Logout Button (only shown when authenticated)
+   ============================================================ */
+
+function LogoutButton() {
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const logout = useAuthStore((s) => s.logout);
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <button
+      onClick={() => {
+        logout();
+        router.push('/login');
+      }}
+      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm nv-transition text-left"
+      style={{ color: 'var(--color-text-secondary)' }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = 'var(--color-danger-light)';
+        e.currentTarget.style.color = 'var(--color-danger)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.color = 'var(--color-text-secondary)';
+      }}
+    >
+      <span className="text-base flex-shrink-0">🚪</span>
+      <span className="flex-1 truncate">退出登录</span>
+    </button>
   );
 }

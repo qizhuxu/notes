@@ -31,10 +31,43 @@ function relativeTime(isoString: string): string {
 }
 
 /* ============================================================
+   Highlight text component
+   ============================================================ */
+
+function HighlightText({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escapedQuery})`, 'gi');
+  const parts = text.split(regex);
+
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark
+            key={i}
+            className="rounded-sm px-0.5"
+            style={{
+              background: 'var(--color-accent-light)',
+              color: 'var(--color-accent)',
+            }}
+          >
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
+/* ============================================================
    NoteCard
    ============================================================ */
 
-function NoteCard({ note }: { note: Note }) {
+function NoteCard({ note, searchQuery }: { note: Note; searchQuery: string }) {
   const activeNoteId = useNoteStore((s) => s.activeNoteId);
   const setActiveNote = useNoteStore((s) => s.setActiveNote);
   const toggleStar = useNoteStore((s) => s.toggleStar);
@@ -76,7 +109,7 @@ function NoteCard({ note }: { note: Note }) {
           className="flex-1 text-sm font-semibold truncate"
           style={{ color: 'var(--color-text-primary)' }}
         >
-          {note.title}
+          <HighlightText text={note.title} query={searchQuery} />
         </h3>
         <button
           onClick={(e) => {
@@ -100,7 +133,7 @@ function NoteCard({ note }: { note: Note }) {
         </div>
       )}
 
-      {/* Content preview */}
+      {/* Content preview with highlight */}
       <p
         className="text-xs leading-relaxed mb-2"
         style={{
@@ -111,7 +144,7 @@ function NoteCard({ note }: { note: Note }) {
           overflow: 'hidden',
         }}
       >
-        {note.content}
+        <HighlightText text={note.content} query={searchQuery} />
       </p>
 
       {/* Tags */}
@@ -173,9 +206,11 @@ function NoteCard({ note }: { note: Note }) {
 export function NoteList() {
   const filteredNotes = useNoteStore((s) => s.filteredNotes());
   const activeFolder = useNoteStore((s) => s.activeFolder);
+  const searchQuery = useNoteStore((s) => s.debouncedQuery);
   const folders = useNoteStore((s) => s.folders);
   const sidebarCollapsed = useNoteStore((s) => s.sidebarCollapsed);
   const setSidebarMobileOpen = useNoteStore((s) => s.setSidebarMobileOpen);
+  const createNote = useNoteStore((s) => s.createNote);
 
   const [sortBy, setSortBy] = useState<'updated' | 'title' | 'words'>('updated');
 
@@ -189,6 +224,8 @@ export function NoteList() {
     if (sortBy === 'words') return b.wordCount - a.wordCount;
     return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
   });
+
+  const isSearching = searchQuery.trim().length > 0;
 
   return (
     <aside
@@ -223,16 +260,19 @@ export function NoteList() {
           <span
             className="text-xs px-1.5 py-0.5 rounded-full"
             style={{
-              background: 'var(--color-bg-tertiary)',
-              color: 'var(--color-text-tertiary)',
+              background: isSearching ? 'var(--color-accent-light)' : 'var(--color-bg-tertiary)',
+              color: isSearching ? 'var(--color-accent)' : 'var(--color-text-tertiary)',
             }}
           >
-            {filteredNotes.length}
+            {isSearching
+              ? `${filteredNotes.length} 条结果`
+              : filteredNotes.length}
           </span>
         </div>
 
         {/* New Note button */}
         <button
+          onClick={() => createNote()}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium nv-transition"
           style={{
             background: 'var(--color-accent)',
@@ -281,16 +321,20 @@ export function NoteList() {
       >
         {sortedNotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-40 gap-2">
-            <span className="text-2xl opacity-40">📭</span>
+            <span className="text-2xl opacity-40">
+              {isSearching ? '🔍' : '📭'}
+            </span>
             <p
               className="text-sm"
               style={{ color: 'var(--color-text-tertiary)' }}
             >
-              暂无笔记
+              {isSearching ? '未找到匹配的笔记' : '暂无笔记'}
             </p>
           </div>
         ) : (
-          sortedNotes.map((note) => <NoteCard key={note.id} note={note} />)
+          sortedNotes.map((note) => (
+            <NoteCard key={note.id} note={note} searchQuery={searchQuery} />
+          ))
         )}
       </div>
     </aside>

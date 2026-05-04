@@ -1,7 +1,8 @@
 'use client';
 
 import { useNoteStore, type Note } from '@/stores/note-store';
-import { useState } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { TipTapEditor } from '@/components/editor/TipTapEditor';
 
 /* ============================================================
    Helpers
@@ -54,15 +55,47 @@ function NoteEditor({
   restoreNote: (id: string) => void;
   toggleStar: (id: string) => void;
 }) {
+  const updateNoteContent = useNoteStore((s) => s.updateNoteContent);
   const [showMenu, setShowMenu] = useState(false);
-  // Initialize local state from the note prop — this runs once per mount
   const [editTitle, setEditTitle] = useState(note.title);
-  const [editContent, setEditContent] = useState(note.content);
+  const [wordCount, setWordCount] = useState(note.wordCount);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const currentNoteRef = useRef(note.id);
 
   const folder = folders.find((f) => f.id === note.folderId);
   const noteTags = note.tags
     .map((tid) => tags.find((t) => t.id === tid))
     .filter(Boolean);
+
+  // Handle TipTap editor content updates with auto-save
+  const handleEditorUpdate = useCallback(
+    (html: string, text: string, wc: number) => {
+      setWordCount(wc);
+      setSaveStatus('unsaved');
+
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+
+      saveTimerRef.current = setTimeout(() => {
+        setSaveStatus('saving');
+        setTimeout(() => {
+          updateNoteContent(currentNoteRef.current, text, html);
+          setSaveStatus('saved');
+        }, 300);
+      }, 800);
+    },
+    [updateNoteContent]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <main className="hidden md:flex flex-1 flex-col h-full overflow-hidden">
@@ -109,7 +142,6 @@ function NoteEditor({
 
         {/* Actions */}
         <div className="flex items-center gap-1 flex-shrink-0">
-          {/* Star toggle */}
           <button
             onClick={() => toggleStar(note.id)}
             className="w-8 h-8 flex items-center justify-center rounded-lg nv-transition"
@@ -234,10 +266,10 @@ function NoteEditor({
         </div>
       </div>
 
-      {/* Editor area */}
-      <div className="flex-1 overflow-y-auto nv-scrollbar">
+      {/* Title + TipTap Editor Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Title */}
-        <div className="px-6 pt-6">
+        <div className="px-6 pt-4 flex-shrink-0">
           <input
             type="text"
             value={editTitle}
@@ -251,7 +283,7 @@ function NoteEditor({
         {/* Trashed notice */}
         {note.isTrashed && (
           <div
-            className="mx-6 mt-3 px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+            className="mx-6 mt-2 px-4 py-2 rounded-lg text-sm flex items-center gap-2 flex-shrink-0"
             style={{
               background: 'var(--color-danger-light)',
               color: 'var(--color-danger)',
@@ -268,23 +300,17 @@ function NoteEditor({
           </div>
         )}
 
-        {/* Content */}
-        <div className="px-6 py-4">
-          <textarea
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            className="w-full min-h-[60vh] bg-transparent outline-none resize-none leading-relaxed text-sm"
-            style={{
-              color: 'var(--color-text-primary)',
-              fontFamily: 'var(--font-mono)',
-            }}
-            placeholder="开始书写..."
+        {/* TipTap Editor — fills remaining space */}
+        <div className="flex-1 min-h-0 mt-1">
+          <TipTapEditor
+            content={note.content}
+            onUpdate={handleEditorUpdate}
           />
         </div>
 
         {/* Back links */}
         <div
-          className="mx-6 mb-6 p-4 rounded-lg"
+          className="mx-6 mb-4 p-4 rounded-lg flex-shrink-0"
           style={{
             background: 'var(--color-bg-secondary)',
             border: '1px solid var(--color-border)',
@@ -342,13 +368,35 @@ function NoteEditor({
         }}
       >
         <div className="flex items-center gap-4">
-          <span>{note.wordCount} 字</span>
+          <span>{wordCount} 字</span>
           <span className="flex items-center gap-1">
-            <span
-              className="w-1.5 h-1.5 rounded-full inline-block"
-              style={{ background: 'var(--color-success)' }}
-            />
-            已保存
+            {saveStatus === 'saved' && (
+              <>
+                <span
+                  className="w-1.5 h-1.5 rounded-full inline-block"
+                  style={{ background: 'var(--color-success)' }}
+                />
+                已保存
+              </>
+            )}
+            {saveStatus === 'saving' && (
+              <>
+                <span
+                  className="w-1.5 h-1.5 rounded-full inline-block animate-pulse"
+                  style={{ background: 'var(--color-accent)' }}
+                />
+                保存中...
+              </>
+            )}
+            {saveStatus === 'unsaved' && (
+              <>
+                <span
+                  className="w-1.5 h-1.5 rounded-full inline-block"
+                  style={{ background: 'var(--color-star)' }}
+                />
+                未保存
+              </>
+            )}
           </span>
         </div>
         <span>最后编辑：{formatDateTime(note.updatedAt)}</span>

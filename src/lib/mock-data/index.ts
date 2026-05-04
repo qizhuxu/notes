@@ -1,11 +1,18 @@
-import { create } from 'zustand';
-import { useCallback, useRef } from 'react';
+/**
+ * Shared in-memory mock data store for API routes.
+ *
+ * This module mirrors the data structures used in the Zustand client stores
+ * (note-store, auth-store, theme-store) so that API routes can serve
+ * realistic responses. Data lives in process memory and resets on restart.
+ */
+
+import { nanoid } from 'nanoid';
 
 // ============================================================
-// Interfaces
+// Types
 // ============================================================
 
-export interface Note {
+export interface MockNote {
   id: string;
   title: string;
   content: string;
@@ -16,10 +23,11 @@ export interface Note {
   isStarred: boolean;
   isTrashed: boolean;
   updatedAt: string;
+  createdAt: string;
   wordCount: number;
 }
 
-export interface Folder {
+export interface MockFolder {
   id: string;
   name: string;
   icon: string;
@@ -27,67 +35,72 @@ export interface Folder {
   type: 'system' | 'custom';
 }
 
-export interface Tag {
+export interface MockTag {
   id: string;
   name: string;
   color: string;
 }
 
-export interface LinkData {
-  source: string;
-  target: string;
-  context: string;
+export interface MockUser {
+  id: string;
+  username: string;
+  email: string;
+  avatarUrl?: string;
+  role: 'user' | 'admin';
+  createdAt: string;
+}
+
+export interface MockApiKey {
+  id: string;
+  name: string;
+  provider: string;
+  key: string;
+  createdAt: string;
+  lastUsedAt: string | null;
+}
+
+export interface MockNoteVersion {
+  id: string;
+  noteId: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  wordCount: number;
+}
+
+export interface MockSettings {
+  theme: 'light' | 'dark' | 'system';
+  language: string;
+  fontSize: number;
+  editorMode: 'rich' | 'markdown' | 'split';
+  autoSave: boolean;
+  autoSaveInterval: number;
+  sidebarCollapsed: boolean;
+  showWordCount: boolean;
+  confirmBeforeDelete: boolean;
 }
 
 // ============================================================
-// Mock Data
+// Helper – time offsets
 // ============================================================
 
-const NOW = new Date();
+const NOW = Date.now();
 
 function minutesAgo(m: number): string {
-  return new Date(NOW.getTime() - m * 60_000).toISOString();
+  return new Date(NOW - m * 60_000).toISOString();
 }
 function hoursAgo(h: number): string {
-  return new Date(NOW.getTime() - h * 3_600_000).toISOString();
+  return new Date(NOW - h * 3_600_000).toISOString();
 }
 function daysAgo(d: number): string {
-  return new Date(NOW.getTime() - d * 86_400_000).toISOString();
+  return new Date(NOW - d * 86_400_000).toISOString();
 }
 
-export const FOLDERS: Folder[] = [
-  { id: 'all', name: '全部笔记', icon: '📝', count: 24, type: 'system' },
-  { id: 'favorites', name: '收藏', icon: '⭐', count: 5, type: 'system' },
-  { id: 'work', name: '工作', icon: '💼', count: 12, type: 'system' },
-  { id: 'personal', name: '个人', icon: '🏠', count: 4, type: 'system' },
-  { id: 'ideas', name: '想法', icon: '💡', count: 3, type: 'custom' },
-  { id: 'archive', name: '归档', icon: '📦', count: 2, type: 'custom' },
-];
+// ============================================================
+// Mock Data Stores
+// ============================================================
 
-export const TAGS: Tag[] = [
-  { id: 'tag-tech', name: '技术', color: '#3b82f6' },
-  { id: 'tag-design', name: '设计', color: '#a855f7' },
-  { id: 'tag-product', name: '产品', color: '#f97316' },
-  { id: 'tag-weekly', name: '周报', color: '#06b6d4' },
-  { id: 'tag-study', name: '学习', color: '#10b981' },
-  { id: 'tag-project', name: '项目', color: '#ec4899' },
-  { id: 'tag-thoughts', name: '随想', color: '#8b5cf6' },
-  { id: 'tag-important', name: '重要', color: '#ef4444' },
-];
-
-// Pre-populate bidirectional links between notes
-export const MOCK_LINKS: LinkData[] = [
-  { source: 'n7', target: 'n11', context: '在组件设计系统中引用了 Zustand 状态管理实践' },
-  { source: 'n11', target: 'n4', context: '设计系统搭建参考了 Tailwind CSS 4' },
-  { source: 'n8', target: 'n12', context: 'AI 写作助手关联到知识管理随想' },
-  { source: 'n12', target: 'n5', context: '知识管理关联到设计心理学笔记' },
-  { source: 'n2', target: 'n8', context: 'PRD 中提到了 AI 写作助手功能' },
-  { source: 'n9', target: 'n7', context: 'TypeScript 技巧笔记关联到 Zustand 最佳实践' },
-  { source: 'n13', target: 'n4', context: '性能优化笔记引用了 Tailwind CSS 4 迁移指南' },
-  { source: 'n1', target: 'n9', context: 'Next.js 15 笔记引用了 TypeScript 高级类型' },
-];
-
-const MOCK_NOTES: Note[] = [
+export const mockNotes: MockNote[] = [
   {
     id: 'n1',
     title: 'Next.js 15 App Router 新特性总结',
@@ -98,6 +111,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: true,
     isTrashed: false,
     updatedAt: minutesAgo(5),
+    createdAt: daysAgo(30),
     wordCount: 1520,
   },
   {
@@ -110,6 +124,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: true,
     isTrashed: false,
     updatedAt: minutesAgo(30),
+    createdAt: daysAgo(25),
     wordCount: 2340,
   },
   {
@@ -122,6 +137,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: hoursAgo(2),
+    createdAt: daysAgo(7),
     wordCount: 890,
   },
   {
@@ -134,6 +150,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: true,
     isTrashed: false,
     updatedAt: hoursAgo(5),
+    createdAt: daysAgo(20),
     wordCount: 1850,
   },
   {
@@ -146,6 +163,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: hoursAgo(8),
+    createdAt: daysAgo(15),
     wordCount: 2100,
   },
   {
@@ -158,6 +176,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: daysAgo(1),
+    createdAt: daysAgo(3),
     wordCount: 320,
   },
   {
@@ -170,6 +189,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: true,
     isTrashed: false,
     updatedAt: daysAgo(1),
+    createdAt: daysAgo(10),
     wordCount: 1340,
   },
   {
@@ -182,6 +202,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: true,
     isTrashed: false,
     updatedAt: daysAgo(2),
+    createdAt: daysAgo(14),
     wordCount: 560,
   },
   {
@@ -194,6 +215,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: daysAgo(2),
+    createdAt: daysAgo(12),
     wordCount: 1780,
   },
   {
@@ -206,6 +228,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: daysAgo(3),
+    createdAt: daysAgo(8),
     wordCount: 280,
   },
   {
@@ -218,6 +241,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: daysAgo(4),
+    createdAt: daysAgo(18),
     wordCount: 1920,
   },
   {
@@ -230,6 +254,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: daysAgo(5),
+    createdAt: daysAgo(22),
     wordCount: 420,
   },
   {
@@ -242,6 +267,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: daysAgo(6),
+    createdAt: daysAgo(16),
     wordCount: 1450,
   },
   {
@@ -254,6 +280,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: daysAgo(10),
+    createdAt: daysAgo(40),
     wordCount: 2100,
   },
   {
@@ -266,9 +293,10 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: false,
     updatedAt: daysAgo(30),
+    createdAt: daysAgo(60),
     wordCount: 980,
   },
-  // Notes in trash
+  // Trashed notes
   {
     id: 'n16',
     title: '已废弃的首页设计方案',
@@ -279,6 +307,7 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: true,
     updatedAt: daysAgo(7),
+    createdAt: daysAgo(20),
     wordCount: 540,
   },
   {
@@ -291,213 +320,116 @@ const MOCK_NOTES: Note[] = [
     isStarred: false,
     isTrashed: true,
     updatedAt: daysAgo(14),
+    createdAt: daysAgo(30),
     wordCount: 380,
   },
   {
     id: 'n18',
     title: '测试用的临时笔记',
-    content:
-      '这是一条用于测试回收站功能的临时笔记，可以在测试完成后安全删除。',
+    content: '这是一条用于测试回收站功能的临时笔记，可以在测试完成后安全删除。',
     folderId: null,
     tags: [],
     isStarred: false,
     isTrashed: true,
     updatedAt: daysAgo(20),
+    createdAt: daysAgo(25),
     wordCount: 42,
   },
 ];
 
+export const mockFolders: MockFolder[] = [
+  { id: 'all', name: '全部笔记', icon: '📝', count: 24, type: 'system' },
+  { id: 'favorites', name: '收藏', icon: '⭐', count: 5, type: 'system' },
+  { id: 'work', name: '工作', icon: '💼', count: 12, type: 'system' },
+  { id: 'personal', name: '个人', icon: '🏠', count: 4, type: 'system' },
+  { id: 'ideas', name: '想法', icon: '💡', count: 3, type: 'custom' },
+  { id: 'archive', name: '归档', icon: '📦', count: 2, type: 'custom' },
+];
+
+export const mockTags: MockTag[] = [
+  { id: 'tag-tech', name: '技术', color: '#3b82f6' },
+  { id: 'tag-design', name: '设计', color: '#a855f7' },
+  { id: 'tag-product', name: '产品', color: '#f97316' },
+  { id: 'tag-weekly', name: '周报', color: '#06b6d4' },
+  { id: 'tag-study', name: '学习', color: '#10b981' },
+  { id: 'tag-project', name: '项目', color: '#ec4899' },
+  { id: 'tag-thoughts', name: '随想', color: '#8b5cf6' },
+  { id: 'tag-important', name: '重要', color: '#ef4444' },
+];
+
+export const mockApiKeys: MockApiKey[] = [
+  {
+    id: 'ak1',
+    name: 'OpenAI API Key',
+    provider: 'openai',
+    key: 'sk-xxxx...xxxx',
+    createdAt: daysAgo(30),
+    lastUsedAt: minutesAgo(10),
+  },
+  {
+    id: 'ak2',
+    name: 'Anthropic API Key',
+    provider: 'anthropic',
+    key: 'sk-ant-xxxx...xxxx',
+    createdAt: daysAgo(15),
+    lastUsedAt: hoursAgo(3),
+  },
+];
+
+export const mockNoteVersions: MockNoteVersion[] = [
+  {
+    id: 'v1',
+    noteId: 'n1',
+    title: 'Next.js 15 App Router 新特性总结',
+    content:
+      'Next.js 15 引入了多项令人兴奋的新特性，包括改进的服务端组件性能、增强的缓存策略以及全新的 Turbopack 编译器。',
+    createdAt: daysAgo(2),
+    wordCount: 680,
+  },
+  {
+    id: 'v2',
+    noteId: 'n1',
+    title: 'Next.js 15 App Router 新特性总结',
+    content:
+      'Next.js 15 引入了多项令人兴奋的新特性。Server Actions 现在支持更灵活的表单处理，中间件的执行效率也得到了显著提升。',
+    createdAt: daysAgo(1),
+    wordCount: 1100,
+  },
+  {
+    id: 'v3',
+    noteId: 'n2',
+    title: '产品需求文档：NoteVault 2.0',
+    content:
+      'NoteVault 2.0 将从单一的笔记记录工具升级为智能知识管理系统。核心功能包括三栏布局编辑器和双向链接。',
+    createdAt: daysAgo(10),
+    wordCount: 1200,
+  },
+];
+
+export const defaultSettings: MockSettings = {
+  theme: 'system',
+  language: 'zh-CN',
+  fontSize: 16,
+  editorMode: 'rich',
+  autoSave: true,
+  autoSaveInterval: 5,
+  sidebarCollapsed: false,
+  showWordCount: true,
+  confirmBeforeDelete: true,
+};
+
+/** Runtime mutable settings – starts from defaults */
+export let currentSettings: MockSettings = { ...defaultSettings };
+
 // ============================================================
-// Store
+// Utility: generate short IDs for mock data
 // ============================================================
 
-interface NoteState {
-  notes: Note[];
-  folders: Folder[];
-  tags: Tag[];
-  links: LinkData[];
-  activeFolder: string | null; // null = all notes
-  activeNoteId: string | null;
-  searchQuery: string;
-  debouncedQuery: string;
-  selectedTags: string[];
-  sidebarCollapsed: boolean;
-  sidebarMobileOpen: boolean;
+let _counter = 100;
 
-  // Computed
-  filteredNotes: () => Note[];
-  getLinkedNotes: (noteId: string) => { outbound: Note[]; inbound: Note[] };
-
-  // Actions
-  setActiveFolder: (id: string | null) => void;
-  setActiveNote: (id: string | null) => void;
-  toggleStar: (id: string) => void;
-  moveToTrash: (id: string) => void;
-  restoreNote: (id: string) => void;
-  setSearchQuery: (q: string) => void;
-  setDebouncedSearchQuery: (q: string) => void;
-  toggleSidebar: () => void;
-  toggleTag: (tagId: string) => void;
-  setSidebarMobileOpen: (open: boolean) => void;
-  updateNoteContent: (id: string, content: string, contentHtml: string) => void;
-  createNote: () => string;
+export function genId(prefix = 'id'): string {
+  _counter += 1;
+  return `${prefix}_${Date.now().toString(36)}_${_counter}`;
 }
 
-export const useNoteStore = create<NoteState>((set, get) => ({
-  notes: MOCK_NOTES,
-  folders: FOLDERS,
-  tags: TAGS,
-  links: MOCK_LINKS,
-  activeFolder: null,
-  activeNoteId: null,
-  searchQuery: '',
-  debouncedQuery: '',
-  selectedTags: [],
-  sidebarCollapsed: false,
-  sidebarMobileOpen: false,
-
-  getLinkedNotes: (noteId) => {
-    const { notes, links } = get();
-    const nonTrashedNotes = notes.filter((n) => !n.isTrashed);
-    const outboundIds = links.filter((l) => l.source === noteId).map((l) => l.target);
-    const inboundIds = links.filter((l) => l.target === noteId).map((l) => l.source);
-    return {
-      outbound: nonTrashedNotes.filter((n) => outboundIds.includes(n.id)),
-      inbound: nonTrashedNotes.filter((n) => inboundIds.includes(n.id)),
-    };
-  },
-
-  filteredNotes: () => {
-    const { notes, activeFolder, debouncedQuery, selectedTags } = get();
-
-    return notes.filter((note) => {
-      // Skip trashed notes unless viewing all
-      if (note.isTrashed && activeFolder !== 'all') return false;
-
-      // Folder filter
-      if (activeFolder === 'favorites') {
-        if (!note.isStarred) return false;
-      } else if (activeFolder === 'all') {
-        if (note.isTrashed) return false;
-      } else if (activeFolder) {
-        if (note.folderId !== activeFolder && !note.isTrashed === false) {
-          // show notes in folder + trashed from folder
-          if (note.folderId !== activeFolder) return false;
-        }
-      }
-
-      // Search filter (uses debounced query)
-      if (debouncedQuery.trim()) {
-        const q = debouncedQuery.toLowerCase();
-        if (
-          !note.title.toLowerCase().includes(q) &&
-          !note.content.toLowerCase().includes(q)
-        )
-          return false;
-      }
-
-      // Tag filter
-      if (selectedTags.length > 0) {
-        if (!selectedTags.some((t) => note.tags.includes(t))) return false;
-      }
-
-      return true;
-    });
-  },
-
-  setActiveFolder: (id) =>
-    set({ activeFolder: id, activeNoteId: null, sidebarMobileOpen: false }),
-  setActiveNote: (id) => set({ activeNoteId: id }),
-
-  toggleStar: (id) =>
-    set((s) => ({
-      notes: s.notes.map((n) =>
-        n.id === id ? { ...n, isStarred: !n.isStarred } : n
-      ),
-    })),
-
-  moveToTrash: (id) =>
-    set((s) => ({
-      notes: s.notes.map((n) =>
-        n.id === id ? { ...n, isTrashed: true } : n
-      ),
-      activeNoteId: s.activeNoteId === id ? null : s.activeNoteId,
-    })),
-
-  restoreNote: (id) =>
-    set((s) => ({
-      notes: s.notes.map((n) =>
-        n.id === id ? { ...n, isTrashed: false } : n
-      ),
-    })),
-
-  setSearchQuery: (q) => set({ searchQuery: q, debouncedQuery: q }),
-  debouncedQuery: '',
-  _debounceTimer: null as ReturnType<typeof setTimeout> | null,
-
-  setDebouncedSearchQuery: (q: string) => {
-    const state = get();
-    // Clear existing timer
-    if (state._debounceTimer) {
-      clearTimeout(state._debounceTimer);
-    }
-    // Set immediately for empty queries
-    if (!q.trim()) {
-      set({ debouncedQuery: '', searchQuery: q });
-      return;
-    }
-    // Set searchQuery immediately for UI, debounced for filtering
-    set({ searchQuery: q });
-    const timer = setTimeout(() => {
-      set({ debouncedQuery: q });
-    }, 300);
-    set({ _debounceTimer: timer });
-  },
-
-  toggleSidebar: () =>
-    set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
-
-  toggleTag: (tagId) =>
-    set((s) => ({
-      selectedTags: s.selectedTags.includes(tagId)
-        ? s.selectedTags.filter((t) => t !== tagId)
-        : [...s.selectedTags, tagId],
-    })),
-
-  setSidebarMobileOpen: (open) => set({ sidebarMobileOpen: open }),
-
-  updateNoteContent: (id, content, contentHtml) =>
-    set((s) => ({
-      notes: s.notes.map((n) =>
-        n.id === id
-          ? {
-              ...n,
-              content,
-              contentHtml,
-              wordCount: content.replace(/\s+/g, '').length,
-              updatedAt: new Date().toISOString(),
-            }
-          : n
-      ),
-    })),
-
-  createNote: () => {
-    const id = 'n' + Date.now();
-    const newNote: Note = {
-      id,
-      title: '无标题笔记',
-      content: '',
-      folderId: null,
-      tags: [],
-      isStarred: false,
-      isTrashed: false,
-      updatedAt: new Date().toISOString(),
-      wordCount: 0,
-    };
-    set((s) => ({
-      notes: [newNote, ...s.notes],
-      activeNoteId: id,
-    }));
-    return id;
-  },
-}));
+export { nanoid };
