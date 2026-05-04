@@ -50,8 +50,10 @@ test
 prompt
 
 server.log
-# Skills directory
+# Skills & agent context
 /skills/
+agent-ctx/
+.zscripts/
 
 # cloudflare
 .wrangler/
@@ -62,3 +64,12 @@ wrangler.toml
 *.db
 *.db-journal
 db/
+
+# non-project directories
+examples/
+mini-services/
+upload/
+download/
+worklog.md
+Caddyfile
+components.json
